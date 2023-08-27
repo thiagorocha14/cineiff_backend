@@ -19,6 +19,14 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
+
+            $table->string('documento');
+            $table->string('email');
+            $table->string('telefone');
+            $table->enum('tipo', ['administrador', 'servidor', 'aluno']);
+            $table->string('instituicao');
+            $table->string('matricula')->nullable();
         });
     }
 
