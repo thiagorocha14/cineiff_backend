@@ -25,7 +25,7 @@ class AuthController extends Controller
                 [
                     'name' => 'required',
                     'email' => 'required|email|unique:users,email',
-                    'password' => 'required'
+                    'password' => 'required|min:6'
                 ]
             );
 
@@ -69,7 +69,7 @@ class AuthController extends Controller
                 $request->all(),
                 [
                     'email' => 'required|email',
-                    'password' => 'required'
+                    'password' => 'required|min:6'
                 ]
             );
 
