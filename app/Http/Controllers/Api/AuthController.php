@@ -25,7 +25,12 @@ class AuthController extends Controller
                 [
                     'name' => 'required',
                     'email' => 'required|email|unique:users,email',
-                    'password' => 'required|min:6'
+                    'password' => 'required|min:6',
+                    'documento' => 'required',
+                    'telefone' => 'required',
+                    'tipo' => 'nullable',
+                    'instituicao' => 'nullable',
+                    'matricula' => 'nullable',
                 ]
             );
 
@@ -40,7 +45,12 @@ class AuthController extends Controller
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password),
+                'documento' => $request->documento,
+                'telefone' => $request->telefone,
+                'tipo' => 'aluno',
+                'instituicao' => $request->instituicao,
+                'matricula' => $request->matricula,
             ]);
 
             return response()->json([
