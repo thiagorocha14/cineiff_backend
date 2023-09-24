@@ -42,21 +42,18 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::create([
+            User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'documento' => $request->documento,
                 'telefone' => $request->telefone,
-                'tipo' => 'aluno',
-                'instituicao' => $request->instituicao,
-                'matricula' => $request->matricula,
+                'tipo' => 'funcionario',
             ]);
 
             return response()->json([
                 'status' => true,
-                'message' => 'Usuário criado com sucesso.',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'message' => 'Usuário cadastrado com sucesso.',
             ], 200);
 
         } catch (\Throwable $th) {
@@ -103,7 +100,8 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Usuário logado com sucesso.',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'token' => $user->createToken("API TOKEN")->plainTextToken,
+                'user' => $user
             ], 200);
 
         } catch (\Throwable $th) {
@@ -127,6 +125,23 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Usuário deslogado com sucesso.',
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function user(Request $request)
+    {
+        try {
+            return response()->json([
+                'status' => true,
+                'message' => 'Usuário logado com sucesso.',
+                'user' => $request->user()
             ], 200);
 
         } catch (\Throwable $th) {
