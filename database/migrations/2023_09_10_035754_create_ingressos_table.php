@@ -16,8 +16,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->bigInteger('evento_id')->unsigned()->nullable();
-            $table->foreign('evento_id')->references('id')->on('eventos');
+            $table->bigInteger('solicitacao_reserva_id')->unsigned()->nullable();
+            $table->foreign('solicitacao_reserva_id')->references('id')->on('solicitacao_reservas');
 
             $table->bigInteger('usuario_id')->unsigned()->nullable();
             $table->foreign('usuario_id')->references('id')->on('users');

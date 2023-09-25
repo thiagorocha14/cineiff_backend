@@ -16,18 +16,22 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->bigInteger('evento_id')->unsigned();
-            $table->foreign('evento_id')->references('id')->on('eventos');
-
+            $table->string('nome_evento');
             $table->string('justificativa');
-            $table->string('nome');
-            $table->string('telefone');
-            $table->string('email');
             $table->string('instituicao');
             $table->string('publico_alvo');
+            $table->dateTime('inicio');
+            $table->dateTime('fim');
+            $table->binary('anexo')->nullable();
 
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->string('nome_solicitante');
+            $table->string('documento');
+            $table->string('telefone');
+            $table->string('email');
+            $table->string('descricao');
+
+            $table->bigInteger('filme_id')->unsigned()->nullable();
+            $table->foreign('filme_id')->references('id')->on('filmes');
         });
     }
 

@@ -8,15 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class SolicitacaoReserva extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['justificativa', 'nome', 'telefone', 'email', 'instituicao', 'publico_alvo'];
+    protected $fillable = [
+        'nome_evento', 'justificativa', 'instituicao', 'publico_alvo', 'inicio', 'fim',
+        'anexo', 'nome_solicitante', 'documento', 'telefone', 'email', 'descricao', 'filme_id'
+    ];
 
-    public function evento()
+    public function filme()
     {
-        return $this->belongsTo(Evento::class);
-    }
-
-    public function solicitante()
-    {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Filme::class);
     }
 }
