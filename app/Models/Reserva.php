@@ -9,7 +9,7 @@ class Reserva extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['inicio', 'fim', 'status'];
+    protected $fillable = ['inicio', 'fim', 'status', 'user_id', 'solicitacao_reserva_id'];
 
     public function responsavel()
     {
