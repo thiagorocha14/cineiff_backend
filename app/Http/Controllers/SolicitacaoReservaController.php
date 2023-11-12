@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SolicitacaoReservaMail;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 use App\Models\SolicitacaoReserva;
 use DB;
 use Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class SolicitacaoReservaController extends Controller
@@ -120,6 +122,8 @@ class SolicitacaoReservaController extends Controller
 
             $solicitacaoReserva->status = 'aprovado';
             $solicitacaoReserva->save();
+
+            Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
             DB::commit();
 
             return response()->json([
@@ -128,11 +132,12 @@ class SolicitacaoReservaController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => 'Erro ao aprovar reserva.',
                 'error' => $e->getMessage(),
-                'trace' => $e->getTrace()
+                'trace' => $e->getTraceAsString()
             ], 500);
         }
     }
