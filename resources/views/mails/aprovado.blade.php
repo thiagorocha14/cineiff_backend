@@ -14,7 +14,7 @@
             <h1>Reserva aprovada!</h1>
         </header>
         <div class="main">
-            <h4>Olá, {{ $solicitacao->nome_solicitante }}. Seu pedido de reserva foi aprovado!</h4>
+            <h4>Olá, {{ $solicitacao->nome_solicitante }}. Seu pedido de reserva foi deferido!</h4>
             <p>
                 Seu evento {{ $solicitacao->nome_evento }} será realizado no Cineteatro do Campus Itaperuna.
                 <br>
