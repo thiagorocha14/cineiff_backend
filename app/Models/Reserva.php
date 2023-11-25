@@ -11,6 +11,7 @@ class Reserva extends Model
 
     protected $fillable = ['inicio', 'fim', 'status', 'user_id', 'solicitacao_reserva_id'];
     protected $with = ['responsavel', 'solicitacao_reserva'];
+    protected $appends = ['lugares_disponiveis'];
 
     public function responsavel()
     {
@@ -20,5 +21,9 @@ class Reserva extends Model
     public function solicitacao_reserva()
     {
         return $this->belongsTo(SolicitacaoReserva::class);
+    }
+    public function getLugaresDisponiveisAttribute()
+    {
+        return 45;
     }
 }

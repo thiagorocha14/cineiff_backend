@@ -20,29 +20,6 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html/storage
 
+RUN php artisan storage:link
+
 CMD php artisan serve --host=0.0.0.0 --port=8000
-
-# Install Composer
-# COPY --from=composer:lts /usr/bin/composer /usr/bin/composer
-
-
-# Copy application files
-# COPY . /var/www/html
-
-# Install application dependencies
-# RUN composer install --no-scripts --verbose
-
-# Set up environment variables
-# COPY .env.example .env
-# RUN php artisan key:generate
-
-# Set up storage and permissions
-# RUN php artisan storage:link
-# RUN chown -R www-data:www-data /var/www/html/storage
-# RUN chmod -R 775 /var/www/html/storage
-
-# Expose port
-# EXPOSE 8000
-
-# Start PHP server
-# CMD bash -c "composer install && php artisan serve --host 0.0.0.0 --port 8000"

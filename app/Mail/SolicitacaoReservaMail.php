@@ -40,7 +40,7 @@ class SolicitacaoReservaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'mails.deferido',
+            markdown: 'mails.aprovado',
             with: [
                 'solicitacao' => $this->solicitacao,
             ],
