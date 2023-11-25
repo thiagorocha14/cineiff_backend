@@ -24,6 +24,7 @@ Route::get('/user', [AuthController::class, 'user']);
 Route::post('/logout', [AuthController::class, 'logout']);
 Route::resource('solicitacao-reserva', SolicitacaoReservaController::class);
 Route::resource('reserva', ReservaController::class);
+Route::get('reservas/confirmadas', [ReservaController::class, 'reservasConfirmadas']);
 Route::resource('filmes', FilmeController::class);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {

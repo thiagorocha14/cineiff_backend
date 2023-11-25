@@ -28,7 +28,6 @@ class SolicitacaoReservaController extends Controller
     public function store(Request $request)
     {
         try {
-
             //Validate
             $validateSolicitacaoReserva = Validator::make(
                 $request->all(),
@@ -44,13 +43,9 @@ class SolicitacaoReservaController extends Controller
                     'telefone' => 'required',
                     'email' => 'required',
                     'descricao' => 'required',
+                    'anexo' => 'mimes:png,jpg,jpeg',
                 ]
             );
-
-            // header('Access-Control-Allow-Origin: *');
-            // header('Access-Control-Allow-Methods: *');
-            // header('Access-Control-Allow-Headers: *');
-            // dd($request->all());
 
             if ($validateSolicitacaoReserva->fails()) {
                 return response()->json([
@@ -62,6 +57,14 @@ class SolicitacaoReservaController extends Controller
 
             DB::beginTransaction();
 
+            // salvando arquivo
+            $caminhoAnexo = '';
+            if ($request->hasFile('anexo') && $request->file('anexo')->isValid()) {
+                $file = $request->file('anexo');
+                $name = time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/reservas', $name);
+                $caminhoAnexo = 'storage/reservas/' . $name;
+            }
 
             $solicitacaoReserva = SolicitacaoReserva::create([
                 'nome_evento' => $request->nome_evento,
@@ -70,7 +73,7 @@ class SolicitacaoReservaController extends Controller
                 'publico_alvo' => $request->publico_alvo,
                 'inicio' => $request->inicio,
                 'fim' => $request->fim,
-                'anexo' => $request->anexo,
+                'anexo' => $caminhoAnexo,
                 'nome_solicitante' => $request->nome_solicitante,
                 'documento' => $request->documento,
                 'telefone' => $request->telefone,
@@ -80,8 +83,6 @@ class SolicitacaoReservaController extends Controller
             ]);
 
             DB::commit();
-
-
 
             return response()->json([
                 'status' => true,

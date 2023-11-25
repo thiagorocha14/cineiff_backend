@@ -56,8 +56,17 @@ class FilmeController extends Controller
                 ], 401);
             }
 
+            $caminhoAnexo = '';
+            if ($request->hasFile('anexo') && $request->file('anexo')->isValid()) {
+                $file = $request->file('anexo');
+                $name = time() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/filmes', $name);
+                $caminhoAnexo = 'storage/filmes/' . $name;
+            }
+
             $filme = new Filme();
-            $filme->fill($request->all());
+            $filme->fill($request->except('anexo'));
+            $filme->imagem = $caminhoAnexo;
             $filme->save();
 
             return response()->json([
