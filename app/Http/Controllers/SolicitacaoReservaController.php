@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SolicitacaoReservaMail;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 use App\Models\SolicitacaoReserva;
 use DB;
 use Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 class SolicitacaoReservaController extends Controller
@@ -119,8 +121,10 @@ class SolicitacaoReservaController extends Controller
                 'status' => 'agendado',
             ]);
 
-            $solicitacaoReserva->status = 'aprovado';
+            $solicitacaoReserva->status = 'deferido';
             $solicitacaoReserva->save();
+
+            Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
             DB::commit();
 
             return response()->json([
@@ -129,11 +133,12 @@ class SolicitacaoReservaController extends Controller
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => 'Erro ao aprovar reserva.',
                 'error' => $e->getMessage(),
-                'trace' => $e->getTrace()
+                'trace' => $e->getTraceAsString()
             ], 500);
         }
     }
@@ -142,7 +147,7 @@ class SolicitacaoReservaController extends Controller
     {
         try {
             $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
-            $solicitacaoReserva->status = 'reprovado';
+            $solicitacaoReserva->status = 'indeferido';
             $solicitacaoReserva->save();
             return response()->json([
                 'status' => true,
@@ -152,6 +157,25 @@ class SolicitacaoReservaController extends Controller
             return response()->json([
                 'status' => false,
                 'message' => 'Erro ao excluir solicitação de reserva.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function recuperar($id)
+    {
+        try {
+            $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
+            $solicitacaoReserva->status = 'pendente';
+            $solicitacaoReserva->save();
+            return response()->json([
+                'status' => true,
+                'message' => 'Solicitação de reserva recuperada com sucesso.',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao recuperar solicitação de reserva.',
                 'error' => $e->getMessage()
             ], 500);
         }

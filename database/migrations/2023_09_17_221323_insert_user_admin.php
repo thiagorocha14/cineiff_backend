@@ -27,6 +27,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        DB::table('users')->where('documento', '10779511000700')->delete();
+        $user_id = DB::table('users')->where('email', 'cineiffitaperuna@gmail.com')->first()->id;
+        DB::table('reservas')->where('user_id', $user_id)->delete();
+        DB::table('users')->where('id', $user_id)->delete();
     }
 };

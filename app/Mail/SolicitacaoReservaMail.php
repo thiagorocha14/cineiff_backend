@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\SolicitacaoReserva;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,12 +14,14 @@ class SolicitacaoReservaMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    private $solicitacao;
+
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(SolicitacaoReserva $solicitacao)
     {
-        //
+        $this->solicitacao = $solicitacao;
     }
 
     /**
@@ -27,7 +30,7 @@ class SolicitacaoReservaMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Solicitacao Reserva Mail',
+            subject: $this->solicitacao->nome_evento . ' - Solicitação de Reserva',
         );
     }
 
@@ -37,7 +40,10 @@ class SolicitacaoReservaMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            markdown: 'mails.deferido',
+            with: [
+                'solicitacao' => $this->solicitacao,
+            ],
         );
     }
 

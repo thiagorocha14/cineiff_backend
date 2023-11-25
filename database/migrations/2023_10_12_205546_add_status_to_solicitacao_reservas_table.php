@@ -11,7 +11,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('solicitacao_reservas', function (Blueprint $table) {
-            $table->enum('status', ['pendente', 'aprovado', 'reprovado'])->default('pendente');
+            $table->enum('status', ['pendente', 'deferido', 'indeferido'])->default('pendente');
         });
     }
 
