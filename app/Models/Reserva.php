@@ -13,6 +13,15 @@ class Reserva extends Model
     protected $with = ['responsavel', 'solicitacao_reserva'];
     protected $appends = ['lugares_disponiveis'];
 
+    //when model calls update all reserva status if fim is less than current date
+    public static function boot()
+    {
+        parent::boot();
+        static::retrieved(function ($model) {
+            self::updateStatusReservas();
+        });
+    }
+
     public function responsavel()
     {
         return $this->belongsTo(User::class);
@@ -22,6 +31,13 @@ class Reserva extends Model
     {
         return $this->belongsTo(SolicitacaoReserva::class);
     }
+
+    public static function updateStatusReservas()
+    {
+        $reservas = Reserva::where('status', 'agendado')->where('fim', '<', date('Y-m-d H:i:s'));
+        $reservas->update(['status' => 'concluido']);
+    }
+
     public function getLugaresDisponiveisAttribute()
     {
         return 45;

@@ -24,28 +24,17 @@ class ReservaController extends Controller
     public function reservasConfirmadas(Request $request)
     {
         try {
-            $somenteComImagem = $request->imagem ?? false;
             $reservas = Reserva::where('status', 'agendado')
                 ->where('fim', '>', date('Y-m-d'));
-            if ($somenteComImagem) {
-                $reservas = $reservas->whereHas('solicitacao_reserva', function ($query) {
-                    $query->whereNotNull('anexo')
-                        ->orWhereHas('filme', function ($query) {
-                            $query->whereNotNull('imagem');
-                        });
-                });
-            }
+            $reservas = $reservas->orderBy('inicio', 'asc');
             $reservas = $reservas->get();
 
             $reservas->map(function ($reserva) {
-                $reserva->title = $reserva->solicitacao_reserva->nome_evento;
-                $reserva->description = $reserva->solicitacao_reserva->descricao;
                 if ($reserva->solicitacao_reserva->anexo) {
                     $reserva->image = asset($reserva->solicitacao_reserva->anexo);
                 } else if ($reserva->solicitacao_reserva->filme && $reserva->solicitacao_reserva->filme->imagem) {
                     $reserva->image = asset($reserva->solicitacao_reserva->filme->imagem);
                 }
-                $reserva->link = '/reserva' . '/' . $reserva->id;
                 return $reserva;
             });
             return response()->json($reservas, 200);

@@ -16,8 +16,8 @@ class SolicitacaoReservaFactory extends Factory
      */
     public function definition(): array
     {
-        $inicio = fake()->dateTime()->setDate(2023, 11, mt_rand(1, 30));
-        $fim = $inicio->add(new \DateInterval('P1D'));
+        $inicio = fake()->dateTimeBetween('now', '+1 month');
+        $fim = $inicio->add(new \DateInterval('PT1H'));
         return [
             'nome_evento' => fake()->name(),
             'justificativa' => fake()->text(),
