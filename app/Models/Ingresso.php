@@ -3,21 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Ingresso extends Model
 {
-    use SoftDeletes;
 
-    protected $fillable = [];
+    protected $fillable = [
+        'reserva_id',
+        'email',
+        'documento',
+    ];
 
-    public function evento()
+    // boot
+    protected static function boot()
     {
-        return $this->belongsTo(Evento::class);
+        parent::boot();
+        static::creating(function ($model) {
+            $ingressos = Ingresso::where('reserva_id', $model->reserva_id)->count();
+            if ($ingressos >= env('QUANTIDADE_DE_INGRESSOS')) {
+                throw new \Exception('Limite de ingressos atingido.');
+            }
+
+            $model->uuid = \Str::uuid();
+        });
     }
 
-    public function usuario()
+    public function reserva()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Reserva::class);
     }
+
 }

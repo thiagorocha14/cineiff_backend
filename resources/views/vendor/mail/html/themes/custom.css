@@ -15,6 +15,12 @@ header {
     text-align: center;
     margin: 0 10px;
 }
+.main-ingresso {
+    display: flex;
+    flex-direction: row;
+    place-items: center;
+    justify-content: center;
+}
 footer {
     text-align: center;
     margin-top: 10px;
@@ -27,4 +33,14 @@ footer {
 
 .highlighted-text {
     color: #ff9900;
+}
+
+.url {
+    background-color: #ff9900;
+    color: #000000;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
 }

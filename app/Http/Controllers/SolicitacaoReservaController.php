@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NovaSolicitacaoMail;
 use App\Mail\SolicitacaoReservaMail;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 use App\Models\SolicitacaoReserva;
+use App\Models\User;
 use DB;
 use Auth;
 use Illuminate\Support\Facades\Mail;
@@ -68,6 +70,26 @@ class SolicitacaoReservaController extends Controller
                 $caminhoAnexo = 'storage/reservas/' . $name;
             }
 
+
+            $periodo = SolicitacaoReserva::where(function ($query) use ($request) {
+                $query->whereBetween('inicio', [$request->inicio, $request->fim])
+                    ->orWhereBetween('fim', [$request->inicio, $request->fim])
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('inicio', '<=', $request->inicio)
+                            ->where('fim', '>=', $request->fim);
+                    });
+            })
+                ->where('status', '!=', 'indeferido')
+                ->exists();
+
+            if ($periodo) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Já existe uma solicitação de reserva para esse período.',
+                ], 401);
+            }
+
             $solicitacaoReserva = SolicitacaoReserva::create([
                 'nome_evento' => $request->nome_evento,
                 'justificativa' => $request->justificativa,
@@ -83,6 +105,10 @@ class SolicitacaoReservaController extends Controller
                 'descricao' => $request->descricao,
                 'filme_id' => $request->filme_id,
             ]);
+
+            User::all()->each(function ($user) use ($solicitacaoReserva) {
+                Mail::to($user->email)->send(new NovaSolicitacaoMail($solicitacaoReserva));
+            });
 
             DB::commit();
 

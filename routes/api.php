@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\FilmeController;
+use App\Http\Controllers\IngressosController;
 use App\Http\Controllers\ReservaController;
 use App\Http\Controllers\SolicitacaoReservaController;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/user', [AuthController::class, 'user']);
 Route::post('/logout', [AuthController::class, 'logout']);
+Route::post('/ingresso', [IngressosController::class, 'store']);
+Route::get('/ingresso/{uuid}', [IngressosController::class, 'show']);
 Route::put('/solicitacao-reserva/{id}/recuperar', [SolicitacaoReservaController::class, 'recuperar']);
 Route::resource('solicitacao-reserva', SolicitacaoReservaController::class);
 Route::resource('reserva', ReservaController::class);

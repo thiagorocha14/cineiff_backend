@@ -52,6 +52,7 @@ class ReservaController extends Controller
         try {
             $reserva = Reserva::find($id);
             $reserva->lugares_disponiveis;
+            $reserva->total_lugares = env('QUANTIDADE_DE_INGRESSOS');
             if ($reserva->solicitacao_reserva->anexo) {
                 $reserva->image = asset($reserva->solicitacao_reserva->anexo);
             } else if ($reserva->solicitacao_reserva->filme && $reserva->solicitacao_reserva->filme->imagem) {

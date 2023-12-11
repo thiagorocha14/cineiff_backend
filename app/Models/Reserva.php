@@ -27,6 +27,11 @@ class Reserva extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function ingressos()
+    {
+        return $this->hasMany(Ingresso::class);
+    }
+
     public function solicitacao_reserva()
     {
         return $this->belongsTo(SolicitacaoReserva::class);
@@ -40,6 +45,6 @@ class Reserva extends Model
 
     public function getLugaresDisponiveisAttribute()
     {
-        return 45;
+        return env('QUANTIDADE_DE_INGRESSOS') - $this->ingressos()->count();
     }
 }

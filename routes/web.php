@@ -1,6 +1,5 @@
 <?php
 
-use App\Mail\SolicitacaoReservaMail;
 use Illuminate\Support\Facades\Route;
 
 /*
