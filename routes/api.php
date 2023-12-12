@@ -28,6 +28,7 @@ Route::get('/ingresso/{uuid}', [IngressosController::class, 'show']);
 Route::put('/solicitacao-reserva/{id}/recuperar', [SolicitacaoReservaController::class, 'recuperar']);
 Route::resource('solicitacao-reserva', SolicitacaoReservaController::class);
 Route::resource('reserva', ReservaController::class);
+Route::get('reservas/relatorio', [ReservaController::class, 'relatorio']);
 Route::get('reservas/confirmadas', [ReservaController::class, 'reservasConfirmadas']);
 Route::resource('filmes', FilmeController::class);
 

@@ -67,4 +67,32 @@ class ReservaController extends Controller
             ], 500);
         }
     }
+
+    public function relatorio(Request $request)
+    {
+        try {
+            $data_inicio = $request->data_inicio;
+            $data_fim = $request->data_fim;
+
+            $reservas = Reserva::whereIn('status', ['agendado', 'concluido']);
+            $reservas = $reservas->whereBetween('inicio', [$data_inicio, $data_fim]);
+            $reservas = $reservas->orderBy('inicio', 'desc');
+            $reservas = $reservas->get();
+
+            if (!$reservas) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Nenhuma reserva encontrada.',
+                ], 404);
+            }
+
+            return response()->json($reservas, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao listar reservas.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
 }

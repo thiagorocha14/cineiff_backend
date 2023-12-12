@@ -11,7 +11,7 @@ class Reserva extends Model
 
     protected $fillable = ['inicio', 'fim', 'status', 'user_id', 'solicitacao_reserva_id'];
     protected $with = ['responsavel', 'solicitacao_reserva'];
-    protected $appends = ['lugares_disponiveis'];
+    protected $appends = ['lugares_disponiveis', 'ingressos_reservados', 'total_lugares'];
 
     //when model calls update all reserva status if fim is less than current date
     public static function boot()
@@ -46,5 +46,15 @@ class Reserva extends Model
     public function getLugaresDisponiveisAttribute()
     {
         return env('QUANTIDADE_DE_INGRESSOS') - $this->ingressos()->count();
+    }
+
+    public function getIngressosReservadosAttribute()
+    {
+        return $this->ingressos()->count();
+    }
+
+    public function getTotalLugaresAttribute()
+    {
+        return env('QUANTIDADE_DE_INGRESSOS');
     }
 }
