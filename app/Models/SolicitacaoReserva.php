@@ -22,7 +22,8 @@ class SolicitacaoReserva extends Model
         'telefone',
         'email',
         'descricao',
-        'filme_id'
+        'filme_id',
+        'justificativa_indeferimento',
     ];
 
     public function filme()

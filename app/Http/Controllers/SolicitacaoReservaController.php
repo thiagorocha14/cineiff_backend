@@ -169,20 +169,21 @@ class SolicitacaoReservaController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
         try {
             $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
             $solicitacaoReserva->status = 'indeferido';
+            $solicitacaoReserva->justificativa_indeferimento = $request->justificativa_indeferimento;
             $solicitacaoReserva->save();
             return response()->json([
                 'status' => true,
-                'message' => 'Solicitação de reserva excluída com sucesso.',
+                'message' => 'Solicitação de reserva indeferida com sucesso.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Erro ao excluir solicitação de reserva.',
+                'message' => 'Erro ao indeferir solicitação de reserva.',
                 'error' => $e->getMessage()
             ], 500);
         }
