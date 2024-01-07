@@ -26,6 +26,8 @@ class SolicitacaoReserva extends Model
         'justificativa_indeferimento',
     ];
 
+    protected $with = ['filme'];
+
     public function filme()
     {
         return $this->belongsTo(Filme::class);

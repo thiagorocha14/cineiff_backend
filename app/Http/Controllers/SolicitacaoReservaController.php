@@ -32,7 +32,6 @@ class SolicitacaoReservaController extends Controller
     public function store(Request $request)
     {
         try {
-            //Validate
             $validateSolicitacaoReserva = Validator::make(
                 $request->all(),
                 [
@@ -61,7 +60,6 @@ class SolicitacaoReservaController extends Controller
 
             DB::beginTransaction();
 
-            // salvando arquivo
             $caminhoAnexo = '';
             if ($request->hasFile('anexo') && $request->file('anexo')->isValid()) {
                 $file = $request->file('anexo');
@@ -69,7 +67,6 @@ class SolicitacaoReservaController extends Controller
                 $file->storeAs('public/reservas', $name);
                 $caminhoAnexo = 'storage/reservas/' . $name;
             }
-
 
             $periodo = SolicitacaoReserva::where(function ($query) use ($request) {
                 $query->whereBetween('inicio', [$request->inicio, $request->fim])
@@ -106,9 +103,9 @@ class SolicitacaoReservaController extends Controller
                 'filme_id' => $request->filme_id,
             ]);
 
-            User::all()->each(function ($user) use ($solicitacaoReserva) {
-                Mail::to($user->email)->send(new NovaSolicitacaoMail($solicitacaoReserva));
-            });
+            // User::all()->each(function ($user) use ($solicitacaoReserva) {
+            //     Mail::to($user->email)->send(new NovaSolicitacaoMail($solicitacaoReserva));
+            // });
 
             DB::commit();
 
@@ -128,7 +125,18 @@ class SolicitacaoReservaController extends Controller
 
     public function show($id)
     {
-        return SolicitacaoReserva::findOrFail($id);
+        try {
+            $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
+            $solicitacaoReserva->filme;
+
+            return response()->json($solicitacaoReserva, 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Erro ao listar solicitação de reserva.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)
@@ -137,20 +145,41 @@ class SolicitacaoReservaController extends Controller
             DB::beginTransaction();
             $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
 
+            $periodo = SolicitacaoReserva::where('id', '!=', $id)->where(function ($query) use ($request) {
+                $query->whereBetween('inicio', [$request->inicio, $request->fim])
+                    ->orWhereBetween('fim', [$request->inicio, $request->fim])
+                    ->orWhere(function ($query) use ($request) {
+                        $query->where('inicio', '<=', $request->inicio)
+                            ->where('fim', '>=', $request->fim);
+                    });
+            })
+                ->where('status', '!=', 'indeferido')
+                ->exists();
+
+            if ($periodo) {
+                DB::rollBack();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Já existe uma solicitação de reserva para esse período.',
+                ], 401);
+            }
+
+            $solicitacaoReserva->update($request->all());
+
             $user_id = auth('sanctum')->user()->id;
 
             $reserva = Reserva::create([
                 'inicio' => $solicitacaoReserva->inicio,
                 'fim' => $solicitacaoReserva->fim,
                 'user_id' => $user_id,
-                'solicitacao_reserva_id' => $solicitacaoReserva->id,
+                'solicitacao_reserva_id' => $id,
                 'status' => 'agendado',
             ]);
 
             $solicitacaoReserva->status = 'deferido';
             $solicitacaoReserva->save();
 
-            Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
+            // Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
             DB::commit();
 
             return response()->json([
@@ -164,7 +193,7 @@ class SolicitacaoReservaController extends Controller
                 'status' => false,
                 'message' => 'Erro ao aprovar reserva.',
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTrace()
             ], 500);
         }
     }
