@@ -12,6 +12,7 @@ use DB;
 use Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Models\TentativasMalsucedidas;
 
 class SolicitacaoReservaController extends Controller
 {
@@ -80,9 +81,16 @@ class SolicitacaoReservaController extends Controller
                 ->exists();
 
             if ($periodo) {
-                DB::rollBack();
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
                 return response()->json([
                     'status' => false,
+                    'horario_indisponivel' => true,
                     'message' => 'Já existe uma solicitação de reserva para esse período.',
                 ], 401);
             }

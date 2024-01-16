@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Reserva;
 use Illuminate\Http\Request;
+use App\Models\TentativasMalsucedidas;
 
 class ReservaController extends Controller
 {
@@ -86,7 +87,9 @@ class ReservaController extends Controller
                 ], 404);
             }
 
-            return response()->json($reservas, 200);
+            $qtdeMalSucedidas = TentativasMalsucedidas::whereBetween('inicio', [$data_inicio, $data_fim])->count();
+
+            return response()->json(['reservas' => $reservas, 'qtdeMalSucedidas' => $qtdeMalSucedidas], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
