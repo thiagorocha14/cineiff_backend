@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['*', 'https://api.cineiff.live', 'http://api.cineiff.live', 'http://64.23.182.10', '64.23.182.10'],
 
     'allowed_origins_patterns' => ['*'],
 
