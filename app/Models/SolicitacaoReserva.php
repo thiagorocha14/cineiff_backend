@@ -24,7 +24,6 @@ class SolicitacaoReserva extends Model
         'descricao',
         'filme_id',
         'justificativa_indeferimento',
-        'horario_indisponivel',
     ];
 
     protected $with = ['filme'];
