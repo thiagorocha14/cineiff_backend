@@ -19,7 +19,7 @@ class SolicitacaoReservaController extends Controller
     public function index()
     {
         try {
-            $solicitacaoReservas = SolicitacaoReserva::all();
+            $solicitacaoReservas = SolicitacaoReserva::orderBy('inicio', 'desc')->get();
             return response()->json($solicitacaoReservas, 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -67,6 +67,48 @@ class SolicitacaoReservaController extends Controller
                 $name = time() . '.' . $file->getClientOriginalExtension();
                 $file->storeAs('public/reservas', $name);
                 $caminhoAnexo = 'storage/reservas/' . $name;
+            }
+
+            if ($request->inicio > $request->fim) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de início não pode ser maior que a data de fim.',
+                ], 401);
+            }
+
+            if ($request->inicio < date('Y-m-d')) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de início não pode ser menor que a data atual.',
+                ], 401);
+            }
+
+            if ($request->fim < date('Y-m-d')) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de fim não pode ser menor que a data atual.',
+                ], 401);
             }
 
             $periodo = SolicitacaoReserva::where(function ($query) use ($request) {
@@ -153,7 +195,49 @@ class SolicitacaoReservaController extends Controller
             DB::beginTransaction();
             $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
 
-            $periodo = SolicitacaoReserva::where('id', '!=', $id)->where(function ($query) use ($request) {
+            if ($request->inicio > $request->fim) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de início não pode ser maior que a data de fim.',
+                ], 401);
+            }
+
+            if ($request->inicio < date('Y-m-d')) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de início não pode ser menor que a data atual.',
+                ], 401);
+            }
+
+            if ($request->fim < date('Y-m-d')) {
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Data de fim não pode ser menor que a data atual.',
+                ], 401);
+            }
+
+            $periodo = SolicitacaoReserva::where(function ($query) use ($request) {
                 $query->whereBetween('inicio', [$request->inicio, $request->fim])
                     ->orWhereBetween('fim', [$request->inicio, $request->fim])
                     ->orWhere(function ($query) use ($request) {
@@ -165,9 +249,16 @@ class SolicitacaoReservaController extends Controller
                 ->exists();
 
             if ($periodo) {
-                DB::rollBack();
+                TentativasMalsucedidas::create([
+                    'nome_evento' => $request->nome_evento,
+                    'inicio' => $request->inicio,
+                    'fim' => $request->fim,
+                ]);
+
+                DB::commit();
                 return response()->json([
                     'status' => false,
+                    'horario_indisponivel' => true,
                     'message' => 'Já existe uma solicitação de reserva para esse período.',
                 ], 401);
             }
