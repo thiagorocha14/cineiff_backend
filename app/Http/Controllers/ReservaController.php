@@ -87,9 +87,9 @@ class ReservaController extends Controller
                 ], 404);
             }
 
-            $qtdeMalSucedidas = TentativasMalsucedidas::whereBetween('inicio', [$data_inicio, $data_fim])->count();
+            $qtdeTentativasMalSucedidas = TentativasMalsucedidas::whereBetween('inicio', [$data_inicio, $data_fim])->count();
 
-            return response()->json(['reservas' => $reservas, 'qtdeMalSucedidas' => $qtdeMalSucedidas], 200);
+            return response()->json(['reservas' => $reservas, 'qtdeTentativasMalSucedidas' => $qtdeTentativasMalSucedidas], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
