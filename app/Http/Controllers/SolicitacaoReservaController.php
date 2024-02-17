@@ -246,6 +246,7 @@ class SolicitacaoReservaController extends Controller
                     });
             })
                 ->where('status', '!=', 'indeferido')
+                ->where('id', '!=', $id)
                 ->exists();
 
             if ($periodo) {
