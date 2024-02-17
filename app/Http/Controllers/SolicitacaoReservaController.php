@@ -153,9 +153,9 @@ class SolicitacaoReservaController extends Controller
                 'filme_id' => $request->filme_id,
             ]);
 
-            // User::all()->each(function ($user) use ($solicitacaoReserva) {
-            //     Mail::to($user->email)->send(new NovaSolicitacaoMail($solicitacaoReserva));
-            // });
+            User::all()->each(function ($user) use ($solicitacaoReserva) {
+                Mail::to($user->email)->send(new NovaSolicitacaoMail($solicitacaoReserva));
+            });
 
             DB::commit();
 
@@ -278,7 +278,7 @@ class SolicitacaoReservaController extends Controller
             $solicitacaoReserva->status = 'deferido';
             $solicitacaoReserva->save();
 
-            // Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
+            Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaMail($solicitacaoReserva));
             DB::commit();
 
             return response()->json([
