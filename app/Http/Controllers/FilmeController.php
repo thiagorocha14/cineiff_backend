@@ -107,7 +107,22 @@ class FilmeController extends Controller
     public function destroy($id)
     {
         try {
-            $filme = Filme::findOrFail($id);
+            $filme = Filme::find($id);
+
+            $possuiSolicitacao = $filme->solicitacoes_reservas()->where(function ($query) {
+                $query->where('status', 'pendente')
+                    ->orWhereHas('reserva', function ($query) {
+                        $query->where('status', 'agendado');
+                    });
+            })->exists();
+
+            if ($possuiSolicitacao) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Filme possui solicitações de reserva pendentes ou reservas agendadas',
+                ], 401);
+            }
+
             $filme->delete();
 
             return response()->json([

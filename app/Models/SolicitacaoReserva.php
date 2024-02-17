@@ -30,7 +30,7 @@ class SolicitacaoReserva extends Model
 
     public function filme()
     {
-        return $this->belongsTo(Filme::class);
+        return $this->belongsTo(Filme::class, 'filme_id', 'id');
     }
 
     public function reserva()

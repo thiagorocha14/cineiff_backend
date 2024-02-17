@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NovaSolicitacaoMail;
+use App\Mail\SolicitacaoReservaIndeferidaMail;
 use App\Mail\SolicitacaoReservaMail;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 use App\Models\SolicitacaoReserva;
 use App\Models\User;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -301,10 +302,17 @@ class SolicitacaoReservaController extends Controller
     public function destroy($id, Request $request)
     {
         try {
+            DB::beginTransaction();
+
             $solicitacaoReserva = SolicitacaoReserva::findOrFail($id);
             $solicitacaoReserva->status = 'indeferido';
             $solicitacaoReserva->justificativa_indeferimento = $request->justificativa_indeferimento;
             $solicitacaoReserva->save();
+
+            Mail::to($solicitacaoReserva->email)->send(new SolicitacaoReservaIndeferidaMail($solicitacaoReserva));
+
+            DB::commit();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Solicitação de reserva indeferida com sucesso.',

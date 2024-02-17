@@ -12,6 +12,14 @@ class Filme extends Model
 
     public function solicitacoes_reservas()
     {
-        return $this->hasMany(SolicitacaoReserva::class);
+        return $this->hasMany(SolicitacaoReserva::class, 'filme_id', 'id');
     }
+
+    public function reservas_agendadas()
+    {
+        return $this->solicitacoes_reservas()->whereHas('reserva', function ($query) {
+            $query->where('status', 'agendado');
+        });
+    }
+
 }
