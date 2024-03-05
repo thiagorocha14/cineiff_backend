@@ -18,13 +18,17 @@ class Ingresso extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $ingressos = Ingresso::where('reserva_id', $model->reserva_id)->count();
-            if ($ingressos >= env('QUANTIDADE_DE_INGRESSOS')) {
-                throw new \Exception('Limite de ingressos atingido.');
-            }
-
+            $model->verificarDisponibilidade();
             $model->uuid = \Str::uuid();
         });
+    }
+
+    public function verificarDisponibilidade()
+    {
+        $ingressos = Ingresso::where('reserva_id', $this->reserva_id)->count();
+        if ($ingressos >= env('QUANTIDADE_DE_INGRESSOS')) {
+            throw new \Exception('Limite de ingressos atingido.');
+        }
     }
 
     public function reserva()

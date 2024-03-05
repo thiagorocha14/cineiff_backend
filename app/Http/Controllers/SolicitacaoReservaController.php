@@ -20,7 +20,7 @@ class SolicitacaoReservaController extends Controller
     public function index()
     {
         try {
-            $solicitacaoReservas = SolicitacaoReserva::orderBy('inicio', 'desc')->get();
+            $solicitacaoReservas = SolicitacaoReserva::orderByRaw("status = 'pendente' DESC, inicio DESC")->get();
             return response()->json($solicitacaoReservas, 200);
         } catch (\Exception $e) {
             return response()->json([
